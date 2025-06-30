@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Harga Setoran LSP Klining Servis</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      padding: 1rem;
+      margin: 0;
+      background: #f0f4f8;
+      color: #333;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 1rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+      font-size: 1.25rem;
+    }
+    .logo {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .logo img {
+      max-width: 140px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+    label {
+      display: block;
+      margin-top: 0.75rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    input[type="number"], input[type="text"] {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+    }
+    .checkbox {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+    .total {
+      margin-top: 1.5rem;
+      font-size: 1rem;
+      font-weight: bold;
+      text-align: center;
+      background: #e0f7fa;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      line-height: 1.4;
+    }
+    .whatsapp {
+      text-align: center;
+      margin-top: 1.25rem;
+    }
+    .whatsapp a {
+      background-color: #25d366;
+      color: white;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      text-decoration: none;
+      font-weight: bold;
+      display: inline-block;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <img src="LSP background.png" alt="Logo LSP Klining Servis">
+    </div>
+    <h2>Harga Setoran LSP Klining Servis</h2>
+
+    <label for="namaPerusahaan">Nama Perusahaan:</label>
+    <input type="text" id="namaPerusahaan" placeholder="Ketik nama perusahaan...">
+
+    <div id="inputs"></div>
+
+    <div class="checkbox">
+      <input type="checkbox" id="tuk"> Gunakan TUK MAC (+Rp 25.000/peserta)
+    </div>
+
+    <div class="total" id="totalHarga">
+      Total Harga Skema: Rp 0<br>
+      Tambahan Biaya TUK MAC: Rp 0<br>
+      <strong>Total Keseluruhan: Rp 0</strong>
+    </div>
+
+    <div class="whatsapp">
+      <a href="#" id="waLink" target="_blank">Kirim ke WhatsApp</a>
+    </div>
+  </div>
+
+  <script>
+    const dataSkema = {
+      'Kliner Junior': 250000,
+      'Kliner Senior': 300000,
+      'Petugas Kebersihan Taman': 400000,
+      'Kliner Spesialis Dinding': 400000,
+      'Kliner Spesialis Lantai': 400000,
+      'Kliner Spesialis Fasyankes': 400000,
+      'Pramubakti': 300000,
+      'Team Leader': 400000,
+      'Supervisor': 400000,
+      'Quality Control': 500000,
+      'Koordinator': 400000,
+      'Manajer Operasional': 800000
+    };
+
+    const inputsDiv = document.getElementById('inputs');
+    const tuk = document.getElementById('tuk');
+    const totalHarga = document.getElementById('totalHarga');
+    const waLink = document.getElementById('waLink');
+    const namaPerusahaan = document.getElementById('namaPerusahaan');
+
+    const inputElements = {};
+
+    Object.entries(dataSkema).forEach(([nama, harga]) => {
+      const label = document.createElement('label');
+      label.textContent = `Jumlah ${nama} (Rp ${harga.toLocaleString('id-ID')}):`;
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.min = 0;
+      input.value = 0;
+      input.id = nama;
+      inputElements[nama] = input;
+      inputsDiv.appendChild(label);
+      inputsDiv.appendChild(input);
+    });
+
+    function updateTotal() {
+      let totalSkema = 0;
+      let totalPeserta = 0;
+      let biayaTUK = 0;
+      let waText = 'Rincian Harga Setoran:%0A';
+
+      Object.entries(dataSkema).forEach(([nama, harga]) => {
+        const jumlah = parseInt(inputElements[nama].value) || 0;
+        totalPeserta += jumlah;
+      });
+
+      Object.entries(dataSkema).forEach(([nama, harga]) => {
+        const jumlah = parseInt(inputElements[nama].value) || 0;
+        let hargaPerPeserta = harga;
+        if (totalPeserta >= 100) hargaPerPeserta -= 50000;
+        const subtotal = jumlah * hargaPerPeserta;
+        const subtotalTUK = tuk.checked ? jumlah * 25000 : 0;
+        totalSkema += subtotal;
+        biayaTUK += subtotalTUK;
+        if (jumlah > 0) {
+          waText += `- ${nama}: ${jumlah} peserta x Rp ${hargaPerPeserta.toLocaleString('id-ID')} = Rp ${subtotal.toLocaleString('id-ID')}%0A`;
+        }
+      });
+
+      const totalKeseluruhan = totalSkema + biayaTUK;
+
+      totalHarga.innerHTML = `Total Harga Skema: Rp ${totalSkema.toLocaleString('id-ID')}<br>Tambahan Biaya TUK MAC: Rp ${biayaTUK.toLocaleString('id-ID')}<br><strong>Total Keseluruhan: Rp ${totalKeseluruhan.toLocaleString('id-ID')}</strong>`;
+
+      waText = `Nama Perusahaan: ${namaPerusahaan.value}%0A%0A` + waText;
+      waText += `%0ATotal Harga Skema: Rp ${totalSkema.toLocaleString('id-ID')}%0ATambahan TUK MAC: Rp ${biayaTUK.toLocaleString('id-ID')}%0A%0ATotal Keseluruhan: Rp ${totalKeseluruhan.toLocaleString('id-ID')}`;
+
+      waLink.href = `https://wa.me/?text=${waText}`;
+    }
+
+    Object.values(inputElements).forEach(input => {
+      input.addEventListener('input', updateTotal);
+    });
+    tuk.addEventListener('change', updateTotal);
+    namaPerusahaan.addEventListener('input', updateTotal);
+
+    updateTotal();
+  </script>
+</body>
+</html>
